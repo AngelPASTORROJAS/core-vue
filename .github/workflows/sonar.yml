@@ -2,39 +2,39 @@ name: SonarCloud Vue Analysis
 on: [push, pull_request]
 
 jobs:
-    sonar:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-              with:
-                  fetch-depth: 0
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            # NOUVEAU: Installer pnpm avant Node.js pour s'assurer qu'il est disponible
-            - name: 🛠️ Installer pnpm
-              uses: pnpm/action-setup@v4.2.0
+      # NOUVEAU: Installer pnpm avant Node.js pour s'assurer qu'il est disponible
+      - name: 🛠️ Installer pnpm
+        uses: pnpm/action-setup@v4.2.0
 
-            - name: 🛠️ Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 20
-                  cache: "pnpm" # Utilise le cache de pnpm
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm" # Utilise le cache de pnpm
 
-            - name: 📦 Installer les dépendances et construire
-              run: |
-                  # Ces commandes vont maintenant fonctionner car pnpm est installé
-                  pnpm install --frozen-lockfile
-                  pnpm run build # S'assurer que le script 'build' est défini dans package.json
+      - name: 📦 Installer les dépendances et construire
+        run: |
+          # Ces commandes vont maintenant fonctionner car pnpm est installé
+          pnpm install --frozen-lockfile
+          pnpm run build # S'assurer que le script 'build' est défini dans package.json
 
-            # --- L'analyse SonarCloud (Scan) ---
-            - name: 🔎 SonarCloud Scan
-              uses: SonarSource/sonarcloud-github-action@v3
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-              with:
-                  args: >
-                      -Dsonar.projectKey=core-vue
-                      -Dsonar.organization=angelpastorrojas
-                      -Dsonar.sources=src
-                      -Dsonar.tests=tests
-                      -Dsonar.exclusions=**/node_modules/**,**/dist/**,**.github/**
+      # --- L'analyse SonarCloud (Scan) ---
+      - name: 🔎 SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=AngelPASTORROJAS_core-vue
+            -Dsonar.organization=angelpastorrojas
+            -Dsonar.sources=src
+            -Dsonar.tests=tests
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**.github/**
