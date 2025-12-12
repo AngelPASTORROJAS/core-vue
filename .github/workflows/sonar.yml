@@ -9,26 +9,32 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Setup Node
+            # NOUVEAU: Installer pnpm avant Node.js pour s'assurer qu'il est disponible
+            - name: 🛠️ Installer pnpm
+              uses: pnpm/action-setup@v4.2.0
+
+            - name: 🛠️ Setup Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 20
-                  cache: "pnpm" # ← Utilise ton pnpm cache
+                  cache: "pnpm" # Utilise le cache de pnpm
 
-            - name: Install & build
+            - name: 📦 Installer les dépendances et construire
               run: |
-                  pnpm install --frozen-lockfile  # ← pnpm au lieu de npm
-                  pnpm run build
+                  # Ces commandes vont maintenant fonctionner car pnpm est installé
+                  pnpm install --frozen-lockfile
+                  pnpm run build # S'assurer que le script 'build' est défini dans package.json
 
-            - name: SonarCloud Scan
+            # --- L'analyse SonarCloud (Scan) ---
+            - name: 🔎 SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@v3
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # ← Default token
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               with:
                   args: >
-                      -Dsonar.projectKey=core-vue  # ← Remplace par ton vrai projectKey
-                      -Dsonar.organization=angelpastorrojas  # ← Ton org SonarCloud
+                      -Dsonar.projectKey=core-vue
+                      -Dsonar.organization=angelpastorrojas
                       -Dsonar.sources=src
                       -Dsonar.tests=tests
                       -Dsonar.exclusions=**/node_modules/**,**/dist/**,**.github/**
