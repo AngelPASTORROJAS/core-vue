@@ -13,20 +13,22 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 20
+                  cache: "pnpm" # ← Utilise ton pnpm cache
 
             - name: Install & build
               run: |
-                  npm ci
-                  npm run build
+                  pnpm install --frozen-lockfile  # ← pnpm au lieu de npm
+                  pnpm run build
 
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@v3
               env:
-                  GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # ← Default token
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
               with:
                   args: >
-                      -Dsonar.projectKey=TON_ORG_TON_REPO
-                      -Dsonar.organization=TON_ORG
+                      -Dsonar.projectKey=core-vue  # ← Remplace par ton vrai projectKey
+                      -Dsonar.organization=angelpastorrojas  # ← Ton org SonarCloud
                       -Dsonar.sources=src
-                      -Dsonar.exclusions=**/node_modules/**,**/dist/**
+                      -Dsonar.tests=tests
+                      -Dsonar.exclusions=**/node_modules/**,**/dist/**,**.github/**
