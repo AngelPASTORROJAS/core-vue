@@ -1,12 +1,32 @@
-name: SonarCloud
+name: SonarCloud Vue Analysis
 on: [push, pull_request]
+
 jobs:
     sonar:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Install & build
+              run: |
+                  npm ci
+                  npm run build
+
             - name: SonarCloud Scan
               uses: SonarSource/sonarcloud-github-action@v3
               env:
                   GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              with:
+                  args: >
+                      -Dsonar.projectKey=TON_ORG_TON_REPO
+                      -Dsonar.organization=TON_ORG
+                      -Dsonar.sources=src
+                      -Dsonar.exclusions=**/node_modules/**,**/dist/**
